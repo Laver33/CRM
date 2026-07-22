@@ -35,7 +35,7 @@ function App() {
 
         <SideBar />
 
-        <div className="flex flex-col md:pl-64">
+        <div className="flex flex-col md:pl-64 ">
           <main className="flex-1 p-6">
             <AppContent />
           </main>

@@ -1,0 +1,129 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+// Пользователь 
+model Freelancer {
+  id String @id @default(cuid())
+  hash String 
+  email String @unique
+  name String
+  surname String
+  age Int
+  role Role
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+
+  clients Client[]   
+  projects Project[] 
+}
+
+// Клиент
+model Client {
+  id String @id @default(cuid())
+  name String
+  phone String? @unique
+  companyName String
+  email String @unique
+  comment String
+  totalSpend  Int
+
+  freelancerId String
+  freelancer Freelancer @relation(fields: [freelancerId], references: [id])
+
+  projects Project[]
+  notes Note[]
+}
+
+
+// Проект
+model Project {
+  id String @id @default(cuid())
+  name String 
+  description String
+  status  ProjectStatus
+  budget Int
+  start DateTime 
+  end DateTime
+
+  freelancerId String
+  freelancer Freelancer @relation(fields: [freelancerId], references: [id])
+
+  clientId String   
+  client Client @relation(fields: [clientId], references: [id])
+
+  invoices Invoice[]
+  tasks Task[]
+  notes Note[]
+}
+
+// Cxtn
+model Invoice {
+  id String @id @default(cuid())
+  name String 
+  description String
+  status InvoiceStatus
+  date DateTime
+
+
+  projectId String
+  project Project @relation(fields: [projectId], references: [id]) 
+}
+
+// Задача
+model Task {
+  id String @id @default(cuid())
+  name String 
+  description String
+  status  TaskStatus
+  data DateTime
+
+  projectId String
+  project Project @relation(fields: [projectId], references: [id]) 
+}
+
+// Заметки
+model Note {
+  id String @id @default(cuid())
+  title String 
+  description String
+
+  clientId String?
+  projectId String?
+
+  client  Client?  @relation(fields: [clientId], references: [id])
+  project Project? @relation(fields: [projectId], references: [id])
+}
+
+
+
+enum Role {
+  FREELANCER
+  CLIENT
+}
+
+enum ProjectStatus {
+  LEAD
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum InvoiceStatus {
+  Processing
+  Paid
+}
